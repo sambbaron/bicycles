@@ -1,6 +1,7 @@
 
-class Bicycle(object):
-  """A bicycle with:
+
+class BicyclePart(object):
+  """A bicycle part (wheel, frame, etc.) with:
   model_name - string - Bicycle model name
   weight - integer - Bicycle weight in pounds
   cost - integer - Bicycle production cost in whole dollars"""
@@ -9,6 +10,44 @@ class Bicycle(object):
       self.model_name = model_name
       self.weight = weight
       self.cost = cost
+      
+class Wheel(BicyclePart):
+  """A bicycle wheel with same attributes as Bicycle Part (model_name, weight, cost)"""
+  pass
+
+class Frame(BicyclePart):
+  """A bicycle frame with same attributes as Bicycle Part (model_name, weight, cost)"""
+  pass
+
+class Bicycle(object):
+  """A bicycle with:
+  model_name - string - Bicycle model name
+  wheel_type - Wheel Class - Bicycle wheel model name
+  frame_type - Frame Class - Bicycle frame model name
+  wheel_count - integer - Number of wheels
+  weight - integer - Bicycle weight in pounds - frame + wheels
+  cost - integer - Bicycle production cost in whole dollars - frame + wheels"""
+  
+  def __init__(self, model_name, wheel_type, frame_type):
+    self.model_name = model_name
+    self.wheel_type = wheel_type
+    self.frame_type = frame_type
+
+  wheel_count = 2  
+#   self.weight = (self.wheel_type.weight * 2) + self.frame_type.weight
+#   self.cost = (self.wheel_type.cost * 2) + self.frame_type.cost    
+
+  # Calculate total bicycle value using selected bicycle part attribute (weight, cost)
+  def calc_value(self, attribute):
+    return (getattr(self.wheel_type, attribute) * 2) + getattr(self.frame_type, attribute)
+
+  # Return bicycle total weight
+  def weight(self):  
+    return self.calc_value("weight")
+  
+  # Return bicycle total cost
+  def cost(self):
+    return self.calc_value("cost")    
 
 class BikeShop(object):
   """A bike shop with:
@@ -21,21 +60,18 @@ class BikeShop(object):
     self.shop_name = shop_name
     self.bicycle_inventory = bicycle_inventory
     self.bicycle_markup = bicycle_markup
-    
-  profit_balance = 0
+    self.profit_balance = 0
   
   def bicycle_sales_price(self, bicycle):
     """Return sale price for bicycle"""
-    return int(bicycle.cost + round(bicycle.cost * self.bicycle_markup,0))
+    return int(bicycle.cost() + round(bicycle.cost() * self.bicycle_markup,0))
     
   def sell_bicycle(self, bicycle):
     """Sell bicycle using markup over cost, return profit margin, and add to profit balance"""
     # Test whether bicycle is in inventory
     if self.bicycle_inventory[bicycle] > 0:
       # Calculate bicycle profit margin, rounded to a whole dollar
-      bicycle_profit = self.bicycle_sales_price(bicycle) - bicycle.cost
-      # Return bicycle profit margin
-#       return bicycle_profit
+      bicycle_profit = self.bicycle_sales_price(bicycle) - bicycle.cost()
       # Add profit to profit balance
       self.profit_balance += bicycle_profit
       # Remove bicycle from inventory stock
